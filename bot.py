@@ -6,10 +6,14 @@ import config
 
 import random
 
+import string
+
 from telebot import types
 
-print(config)
+#print(config)
 bot = telebot.TeleBot(config.access_token)
+
+flogs = open("flogs.txt", "w")
 
 def my_site_commercial(message):
         keyboard = types.InlineKeyboardMarkup()
@@ -32,16 +36,21 @@ def reply(message):
 @bot.message_handler(commands = ['consult'])
 def reply(message):
         bot.send_message(message.chat.id, "{} {}, вы вошли в режим консультации! Выберите нужные вам параметры, для того, чтобы сделать вместе со мной макет ресторана!".format(message.chat.first_name, message.chat.last_name))  
-            
+        
+           
 @bot.message_handler(content_types=['text'])
-def echo(message):
-    if config.count == 0:
+def reply(message):
+    if message.text.strip('()!?,.№;%:') in config.friendly_phrases:
+        bot.send_sticker(message.chat.id, random.choice(config.friendly_stickers))
+        
+    else:
         bot.send_message(message.chat.id, random.choice(config.greetings))
         config.greetings.append(message.text)
-    if message.text != "/test":
-        bot.send_message(message.chat.id, message.text + ". Be cool, visit 2be.team")
-        print(config.greetings)
-        print(message)
+        bot.send_message(message.chat.id, message.text + " заходи на 2be.team")
+        #print(config.greetings)
+    flogs.write("1")
+    flogs.write("Прислал: {}\n".format(message.from_user.username))
+    flogs.write("---------------------------------\n")
         
 
 
